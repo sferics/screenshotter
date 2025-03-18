@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 __author__  = "Juri Hubrig"
 
 
@@ -280,6 +280,14 @@ dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H:%M")
 dt_minutes_mark   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d %H:%M")
 
 
+def clear_output():
+   """
+   Clears the output in the terminal.
+   """
+   import os
+   os.system('cls' if os.name == 'nt' else "printf '\033c'")
+
+
 if __name__ == '__main__':
    
    # read the config file
@@ -331,8 +339,15 @@ if __name__ == '__main__':
    
    # parse command line arguments
    args     = parser.parse_args()
-   # set verbose and log variables for the whole script
+   # set verbose variable to the value of the command line argument
    verbose  = args.verbose
+   
+   # if verbose print execution time and command line arguments
+   if verbose:
+      print(f"Execution time: {utcnow_str()}")
+      print("Command line arguments:")
+      for arg in vars(args):
+         print(f"{arg}: {getattr(args, arg)}")
    
    # if logging is turned off: log error messages
    if args.log:
@@ -486,7 +501,10 @@ if __name__ == '__main__':
    elif end_datetime == "now":
       # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
-      get_screenshots()
+      try:
+         get_screenshots()
+         print(f"Successfully took screenshot(s) at {utcnow_str()}")
+      except: pass
       sys.exit()
    # if the input is not valid, exit the script
    else: sys.exit("WRONG INPUT: end_datetime has to be 4 or 12 characters long!")
@@ -503,7 +521,7 @@ if __name__ == '__main__':
          # get the remaining time until the start_datetime
          remaining_time = start_datetime - dt.utcnow()
          # clear the all previous output and print the remaining time
-         print("\033c", end="")
+         clear_output()
          print(f"Waiting for {remaining_time} to start...")
       # sleep for a very short time to not overload the CPU
       sleep(0.0000001)
@@ -517,7 +535,7 @@ if __name__ == '__main__':
       # if verbose is True, print the current datetime
       if verbose:
          # clear the all previous output and print the current datetime
-         print("\033c", end="")
+         clear_output()
          print(f"Taking screenshot(s) at {dt.utcnow()}...")
       # take screenshots of all desired sites
       get_screenshots()

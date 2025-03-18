@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 __author__  = "Juri Hubrig"
 
 
@@ -40,7 +40,7 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -64,7 +64,7 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -112,7 +112,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -129,7 +129,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -187,7 +187,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -209,7 +209,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+            dtime = utcnow_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -273,6 +273,7 @@ def watermark(image_path, position, dt_utc):
 # datetime functions for easier handling
 utcnow_minutes    = lambda : dt.utcnow().replace(second=0, microsecond=0)
 utcnow_seconds    = lambda : dt.utcnow().replace(microsecond=0)
+utcnow_str        = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
 
 dt_minutes        = lambda dt_utc : dt_utc.replace(second=0, microsecond=0)
 dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H:%M")
@@ -282,7 +283,7 @@ dt_minutes_mark   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d %H:%M")
 if __name__ == '__main__':
    
    # read the config file
-   config = configparser.ConfigParser()
+   config = configparser.ConfigParser(interpolation=None)
    config.read('config.ini')
    
    # facilitate access to general config
@@ -378,7 +379,7 @@ if __name__ == '__main__':
                print(e)
                traceback.print_exc()
             if log:
-               dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+               dtime = utcnow_str()
                err   = f"{e.__class__.__name__}: {e}"
                trace = traceback.format_exc()
                logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -391,7 +392,7 @@ if __name__ == '__main__':
                   print(e)
                   traceback.print_exc()
                if log:
-                  dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+                  dtime = utcnow_str()
                   err   = f"{e.__class__.__name__}: {e}"
                   trace = traceback.format_exc()
                   logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -403,7 +404,7 @@ if __name__ == '__main__':
                      print(e)
                      traceback.print_exc()
                   if log:
-                     dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+                     dtime = utcnow_str()
                      err   = f"{e.__class__.__name__}: {e}"
                      trace = traceback.format_exc()
                      logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")

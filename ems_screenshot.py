@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.6"
+__version__ = "1.2.7"
 __author__  = "Juri Hubrig"
 
 
@@ -44,8 +44,8 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
-
+         browser.close(reason=e); return
+      
       # click on cookie banner "ACCEPT", not necessary if we only use the iframe of weatherpro.com
       """
       try:
@@ -68,7 +68,7 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
+         browser.close(reason=e); return
       
       # take a screenshot of the UWZ weather warning map
       page.screenshot(
@@ -116,7 +116,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
+         browser.close(reason=e); return
       
       # wait for the map to be fully loaded
       try:
@@ -133,7 +133,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
+         browser.close(reason=e); return
       
       # get the bounding boxes of the elements
       app_box           = page.locator('#appBox').bounding_box()
@@ -191,7 +191,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
+         browser.close(reason=e); return
       
       #TODO fixme or delete
       """
@@ -213,7 +213,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(); return
+         browser.close(reason=e); return
       
       # take a screenshot of the image
       page.screenshot(
@@ -550,7 +550,7 @@ if __name__ == '__main__':
          remaining_time = start_datetime - dt.utcnow()
          # clear the all previous output and print the remaining time
          clear_output()
-         print(f"Waiting for {remaining_time} to start...")
+         print(f"Waiting for next full minute to start (remaining time: {remaining_time})...")
       # sleep for a very short time to not overload the CPU
       sleep(0.0000001)
    
@@ -563,9 +563,9 @@ if __name__ == '__main__':
       # if verbose is True, print the current datetime
       if verbose:
          # clear the all previous output and print the current datetime
-         clear_output()
+         #clear_output()
          print(f"Taking screenshot(s) at {dt.utcnow()}...")
       # take screenshots of all desired sites
       get_screenshots(join=args.join)
-      # sleep for the given interval
-      sleep(args.interval)
+      # sleep for the given interval (minutes)
+      sleep(args.interval*60)

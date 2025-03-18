@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 __author__  = "Juri Hubrig"
 
 
@@ -559,7 +559,8 @@ if __name__ == '__main__':
    
    # start taking screenshots
    while dt.utcnow() <= end_datetime:
-      
+      # measure the time it takes to start the processes that take the screenshots
+      start_time = dt.utcnow()
       # if verbose is True, print the current datetime
       if verbose:
          # clear the all previous output and print the current datetime
@@ -567,5 +568,23 @@ if __name__ == '__main__':
          print(f"Taking screenshot(s) at {dt.utcnow()}...")
       # take screenshots of all desired sites
       get_screenshots(join=args.join)
-      # sleep for the given interval (minutes)
-      sleep(args.interval*60)
+      # measure the time it took to start the processes that take the screenshots
+      end_time = dt.utcnow()
+      # calculate the time it took to start the processes that take the screenshots
+      time_taken = end_time - start_time
+      
+      # subtract the time it took to start the processes from the interval
+      # to make sure we take screenshots every interval minutes
+      # if the time taken is greater than the interval, we don't want to sleep
+       
+      # sleep for the given interval (minutes) - the time it took to start the processes
+      sleep_time = args.interval*60 - time_taken.total_seconds()
+
+      # if the sleep time is greater than 0, sleep for the sleep time
+      if sleep_time > 0:
+         sleep(sleep_time)
+      # else don't sleep, because the time it took to start the processes is greater than the interval
+      # and we don't want to sleep, because we want to take screenshots every interval minutes
+      # if verbose is True, print that we didn't sleep
+      elif verbose:
+         print("Didn't sleep, because the time it took to start the processes is greater than the interval")

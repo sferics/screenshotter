@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 __author__  = "Juri Hubrig"
 
 
@@ -40,7 +40,7 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -64,7 +64,7 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -112,7 +112,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -129,7 +129,7 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -187,7 +187,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -209,7 +209,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
             print(e)
             traceback.print_exc()
          if log:
-            dtime = utcnow_str()
+            dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -271,9 +271,11 @@ def watermark(image_path, position, dt_utc):
 
 
 # datetime functions for easier handling
-utcnow_minutes    = lambda : dt.utcnow().replace(second=0, microsecond=0)
-utcnow_seconds    = lambda : dt.utcnow().replace(microsecond=0)
-utcnow_str        = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+utcnow_minutes       = lambda : dt.utcnow().replace(second=0, microsecond=0)
+utcnow_seconds       = lambda : dt.utcnow().replace(microsecond=0)
+utcnow_minutes_str   = lambda : utcnow_minutes().strftime("%Y-%m-%d %H:%M")
+utcnow_seconds_str   = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+utcnow_metmaps_str   = lambda : utcnow_seconds().strftime("%Y%m%d%H%M")
 
 dt_minutes        = lambda dt_utc : dt_utc.replace(second=0, microsecond=0)
 dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H:%M")
@@ -314,7 +316,9 @@ if __name__ == '__main__':
    cf_username = cf_metmaps["username"]
    cf_password = cf_metmaps["password"]
    cf_URL      = cf_metmaps["URL"]
-   
+   # if no URL is given, use the default URL 
+   if cf_URL == "": cf_URL = "https://metmaps.eu/"
+    
    
    # now parse command line arguments which overwrite the default config settings
    parser = argparse.ArgumentParser(
@@ -345,10 +349,21 @@ if __name__ == '__main__':
    
    # if verbose print execution time and command line arguments
    if verbose:
-      print(f"Execution time: {utcnow_str()}")
+      print(f"Execution time: {utcnow_seconds_str()}")
       print("Command line arguments:")
       for arg in vars(args):
          print(f"{arg}: {getattr(args, arg)}")
+   
+   # if the URL contains a datetime, replace it with the current datetime
+   # replace a tim=YYYYmmddHHMM with the current datetime using regex
+   if "tim=" in cf_URL:
+      # import regex module
+      import re
+      # substitute the datetime in the URL with the current datetime
+      cf_URL = re.sub(r'tim=\d{12}', f'tim={utcnow_metmaps_str()}', cf_URL)
+      # if verbose: print(cf_URL)
+      if verbose:
+         print(f"Replaced 'tim=YYYYmmddHHMM' with 'tim={utcnow_metmaps_str()}' in the URL")
    
    # if logging is turned off: log error messages
    if args.log:
@@ -379,28 +394,31 @@ if __name__ == '__main__':
       """
       Takes screenshots of the desired sites.
       """
+      error = False
+
       # take screenshots for each desired website
       for site in sites:
          # get the function for the desired site
          site_function = globals()[site]
          # get the current datetime in UTC timezone
          dt_utc = dt.utcnow()
-         try:
-            # start a new process for each site
-            p = Process(
+         # create a new process for each site with the given arguments
+         p = Process(
                target=site_function,
                args=(args.output_dir, args.user_agent, dt_utc, args.username, args.password, args.URL)
             )
+         try:
             # start the process in the background
             p.start()
             # if join is True, wait for the process to finish
             if join: p.join()
          except Exception as e:
+            error = True
             if verbose:
                print(e)
                traceback.print_exc()
             if log:
-               dtime = utcnow_str()
+               dtime = utcnow_seconds_str()
                err   = f"{e.__class__.__name__}: {e}"
                trace = traceback.format_exc()
                logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -409,11 +427,12 @@ if __name__ == '__main__':
                # if the process is still running, close it
                p.close()
             except Exception as e:
+               error = True
                if verbose:
                   print(e)
                   traceback.print_exc()
                if log:
-                  dtime = utcnow_str()
+                  dtime = utcnow_seconds_str()
                   err   = f"{e.__class__.__name__}: {e}"
                   trace = traceback.format_exc()
                   logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -421,11 +440,12 @@ if __name__ == '__main__':
                try:
                   p.terminate()
                except Exception as e:
+                  error = True
                   if verbose:
                      print(e)
                      traceback.print_exc()
                   if log:
-                     dtime = utcnow_str()
+                     dtime = utcnow_seconds_str()
                      err   = f"{e.__class__.__name__}: {e}"
                      trace = traceback.format_exc()
                      logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
@@ -437,6 +457,9 @@ if __name__ == '__main__':
                finally: continue
             finally: continue
          finally: continue 
+     
+      # if we had an error, return True, else False
+      return error
    
 
    # if 2 command line arguments are present, take them as start and end datetimes
@@ -507,10 +530,9 @@ if __name__ == '__main__':
    elif end_datetime == "now":
       # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
-      try:
-         get_screenshots(join=args.join)
-         print(f"Successfully took screenshot(s) at {utcnow_str()}")
-      except: pass
+      error = get_screenshots(join=args.join)
+      if not error:
+         print(f"Successfully took screenshot(s) at {utcnow_seconds_str()}")
       sys.exit()
    # if the input is not valid, exit the script
    else: sys.exit("WRONG INPUT: end_datetime has to be 4 or 12 characters long!")

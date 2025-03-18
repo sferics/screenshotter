@@ -1,4 +1,4 @@
-__version__ = "1.2.1"
+__version__ = "1.2.1a"
 __author__  = "Juri Hubrig"
 
 import sys
@@ -321,8 +321,41 @@ if __name__ == '__main__':
                err   = f"{e.__class__.__name__}: {e}"
                trace = traceback.format_exc()
                logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
+            # if we have an error, we want to close the process and continue with the next site (if any)
+            try:
+               # if the process is still running, close it
+               p.close()
+            except Exception as e:
+               if verbose:
+                  print(e)
+                  traceback.print_exc()
+               if log:
+                  dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+                  err   = f"{e.__class__.__name__}: {e}"
+                  trace = traceback.format_exc()
+                  logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
+               # if we can't terminate the process, we want to terminate it
+               try:
+                  p.terminate()
+               except Exception as e:
+                  if verbose:
+                     print(e)
+                     traceback.print_exc()
+                  if log:
+                     dtime = utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
+                     err   = f"{e.__class__.__name__}: {e}"
+                     trace = traceback.format_exc()
+                     logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
+                  # as a last resort, we want to kill the process
+                  # not using try/finally here, because it should never fail
+                  p.kill()
+               # to make sure we continue with the next site, we use finally
+               # see https://stackoverflow.com/questions/11551996/why-do-we-need-the-finally-clause-in-python
+               finally: continue
+            finally: continue
+         finally: continue
    
-
+   
    # if 2 command line arguments are present, take them as start and end datetimes
    if len(args.start_end) == 2:
       start_datetime, end_datetime = args.start_end

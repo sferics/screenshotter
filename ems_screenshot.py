@@ -9,19 +9,19 @@ import logging
 import argparse
 import traceback
 import configparser
-from pathlib import Path
+from pathlib import Path, PurePath
 from multiprocessing import Process
 from time import sleep
 from datetime import datetime as dt, timedelta as td
 
 
-def u(output_dir, user_agent, dt_utc, username, password, URL):
+def u(output_dir, user_agent, dt_utc, username, password, URL, watermark):
    """
    Takes a screenshot of the UWZ weather warning map for Germany.
    """
    # set the URL and image path
    URL         = 'https://www.weatherpro.com/de/germany/berlin/berlin/iframe?mapregion=deutschland'
-   image_path  = f'{output_dir}/uwz_{dt_minutes_file(dt_utc)}.png'
+   image_path  = Path(f"{output_dir}/uwz_{dt_minutes_file(dt_utc)}.png")
 
    # use playwright to take a screenshot of the UWZ weather warning map
    with sync_playwright() as p:
@@ -84,16 +84,16 @@ def u(output_dir, user_agent, dt_utc, username, password, URL):
       browser.close()
    
    # add watermark to the image
-   if args.watermark: watermark(image_path, "bl", dt_utc)
+   if watermark: add_watermark(image_path, "bl", dt_utc)
    
 
-def d(output_dir, user_agent, dt_utc, username, password, URL):
+def d(output_dir, user_agent, dt_utc, username, password, URL, watermark):
    """
    Takes a screenshot of the DWD weather warning map for Germany.
    """
    # set the URL and image path
    URL         = 'https://www.dwd.de/DE/wetter/warnungen_landkreise/warnWetter_node.html'
-   image_path  = path = f'{output_dir}/dwd_{dt_minutes_file(dt_utc)}.png'
+   image_path  =  Path(f"{output_dir}/dwd_{dt_minutes_file(dt_utc)}.png")
    
    # use playwright to take a screenshot of the DWD weather warning map
    with sync_playwright() as p:
@@ -154,15 +154,15 @@ def d(output_dir, user_agent, dt_utc, username, password, URL):
       browser.close()
    
    # add watermark to the image
-   if args.watermark: watermark(image_path, "br", dt_utc)
+   if watermark: add_watermark(image_path, "br", dt_utc)
 
 
-def m(output_dir, user_agent, dt_utc, username, password, URL):
+def m(output_dir, user_agent, dt_utc, username, password, URL, watermark):
    """
    Takes a screenshot of the MetMaps page using the given URL.
    """
    # set the image path
-   image_path = f'{output_dir}/metmaps_{dt_minutes_file(dt_utc)}.png'
+   image_path = Path(f"{output_dir}/metmaps_{dt_minutes_file(dt_utc)}.png")
    
    # use playwright to take a screenshot of the MetMaps page
    with sync_playwright() as p:  
@@ -229,7 +229,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL):
       browser.close()
    
    # add watermark to the image
-   if args.watermark: watermark(image_path, "br", dt_utc)
+   if watermark: add_watermark(image_path, "br", dt_utc)
 
 
 # get names of all user defined functions https://stackoverflow.com/a/60894911/12935487
@@ -237,7 +237,7 @@ all_sites = [f.__name__ for f in globals().values() if type(f) == type(lambda *a
 from playwright.sync_api import sync_playwright
    
 
-def watermark(image_path, position, dt_utc):
+def add_watermark(image_path, position, dt_utc):
    """ 
    Adds a datetime watermark to the image.
    """
@@ -278,7 +278,7 @@ utcnow_seconds_str   = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
 utcnow_metmaps_str   = lambda : utcnow_seconds().strftime("%Y%m%d%H%M")
 
 dt_minutes        = lambda dt_utc : dt_utc.replace(second=0, microsecond=0)
-dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H:%M")
+dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H%M")
 dt_minutes_mark   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d %H:%M")
 
 
@@ -405,7 +405,7 @@ if __name__ == '__main__':
          # create a new process for each site with the given arguments
          p = Process(
                target=site_function,
-               args=(args.output_dir, args.user_agent, dt_utc, args.username, args.password, args.URL)
+               args=(args.output_dir, args.user_agent, dt_utc, args.username, args.password, args.URL, args.watermark)
             )
          try:
             # start the process in the background

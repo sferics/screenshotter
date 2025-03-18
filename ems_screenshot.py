@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 __author__  = "Juri Hubrig"
 
 
@@ -306,7 +306,8 @@ if __name__ == '__main__':
    cf_user_agent     = cf_general["user_agent"]
    cf_log            = cf_general["log"]
    cf_verbose        = cf_general["verbose"]
-
+   cf_join           = cf_general["join"]
+   
    # same with metmaps-specific config
    cf_metmaps  = config["metmaps"]
    # get metmaps-specific config settings
@@ -314,7 +315,7 @@ if __name__ == '__main__':
    cf_password = cf_metmaps["password"]
    cf_URL      = cf_metmaps["URL"]
    
-
+   
    # now parse command line arguments which overwrite the default config settings
    parser = argparse.ArgumentParser(
       # program name and description
@@ -335,7 +336,7 @@ if __name__ == '__main__':
    parser.add_argument('-w', '--watermark', action='store_true', default=cf_watermark, help="Add datetime watermark")
    parser.add_argument('-l', '--log', action='store_true', default=cf_log, help="Enable logging")
    parser.add_argument('-v', '--verbose', action='store_true', default=cf_verbose, help="Print verbose output")
-   
+   parser.add_argument('-j', '--join', action='store_true', help="Join the processes")
    
    # parse command line arguments
    args     = parser.parse_args()
@@ -374,21 +375,26 @@ if __name__ == '__main__':
    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
    
-   def get_screenshots():
+   def get_screenshots(join=True):
       """
       Takes screenshots of the desired sites.
       """
       # take screenshots for each desired website
       for site in sites:
+         # get the function for the desired site
          site_function = globals()[site]
+         # get the current datetime in UTC timezone
          dt_utc = dt.utcnow()
          try:
+            # start a new process for each site
             p = Process(
                target=site_function,
                args=(args.output_dir, args.user_agent, dt_utc, args.username, args.password, args.URL)
             )
+            # start the process in the background
             p.start()
-            p.join()
+            # if join is True, wait for the process to finish
+            if join: p.join()
          except Exception as e:
             if verbose:
                print(e)
@@ -502,7 +508,7 @@ if __name__ == '__main__':
       # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
       try:
-         get_screenshots()
+         get_screenshots(join=args.join)
          print(f"Successfully took screenshot(s) at {utcnow_str()}")
       except: pass
       sys.exit()
@@ -538,6 +544,6 @@ if __name__ == '__main__':
          clear_output()
          print(f"Taking screenshot(s) at {dt.utcnow()}...")
       # take screenshots of all desired sites
-      get_screenshots()
+      get_screenshots(join=args.join)
       # sleep for the given interval
       sleep(args.interval)

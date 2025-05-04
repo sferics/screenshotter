@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.9a"
+__version__ = "1.2.10"
 __author__  = "Juri Hubrig"
 
 
@@ -15,31 +15,31 @@ from time import sleep
 from datetime import datetime as dt, timedelta as td
 
 
-def u(output_dir, user_agent, dt_utc, username, password, URL, watermark):
+def u(args, dt_utc, logger):
    """
    Takes a screenshot of the UWZ weather warning map for Germany.
    """
    # set the URL and image path
    URL         = 'https://www.weatherpro.com/de/germany/berlin/berlin/iframe?mapregion=deutschland'
-   image_path  = Path(f"{output_dir}/uwz_{dt_minutes_file(dt_utc)}.png")
+   image_path  = Path(f"{args.output_dir}/uwz_{dt_minutes_file(dt_utc)}.png")
 
    # use playwright to take a screenshot of the UWZ weather warning map
    with sync_playwright() as p:
       # open the browser and go to the URL
       browser  = p.chromium.launch()
-      context  = browser.new_context(user_agent=user_agent)
+      context  = browser.new_context(user_agent=args.user_agent)
       #context.set_default_timeout(55000)
       page     = context.new_page()
       # set the viewport size
       #page.set_viewport_size({"width": 556, "height": 600})
       try:
-         page.goto(URL)
+         page.goto(args.URL)
          page.wait_for_load_state("load")
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
-         if log:
+         if args.log:
             dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
@@ -60,10 +60,10 @@ def u(output_dir, user_agent, dt_utc, username, password, URL, watermark):
          page.wait_for_load_state('networkidle')
       # if an error occurs, handle it
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
-         if log:
+         if args.log:
             dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
@@ -84,34 +84,34 @@ def u(output_dir, user_agent, dt_utc, username, password, URL, watermark):
       browser.close()
    
    # add watermark to the image
-   if watermark: add_watermark(image_path, "bl", dt_utc)
+   if args.watermark: add_watermark(image_path, "bl", dt_utc)
    
 
-def d(output_dir, user_agent, dt_utc, username, password, URL, watermark):
+def d(args, dt_utc, logger):
    """
    Takes a screenshot of the DWD weather warning map for Germany.
    """
    # set the URL and image path
    URL         = 'https://www.dwd.de/DE/wetter/warnungen_landkreise/warnWetter_node.html'
-   image_path  =  Path(f"{output_dir}/dwd_{dt_minutes_file(dt_utc)}.png")
+   image_path  =  Path(f"{args.output_dir}/dwd_{dt_minutes_file(dt_utc)}.png")
    
    # use playwright to take a screenshot of the DWD weather warning map
    with sync_playwright() as p:
       
       # open the browser and go to the URL
       browser  = p.chromium.launch()
-      context  = browser.new_context(user_agent=user_agent)
+      context  = browser.new_context(user_agent=args.user_agent)
       page     = context.new_page()
       
       # try to go to the URL
       try:
-         page.goto(URL)
+         page.goto(args.URL)
       # if an error occurs, handle it
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
-         if log:
+         if args.log:
             dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
@@ -125,10 +125,10 @@ def d(output_dir, user_agent, dt_utc, username, password, URL, watermark):
          page.wait_for_selector('#svgBox')
       # if an error occurs, handle it
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
-         if log:
+         if args.log:
             dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
@@ -154,15 +154,15 @@ def d(output_dir, user_agent, dt_utc, username, password, URL, watermark):
       browser.close()
    
    # add watermark to the image
-   if watermark: add_watermark(image_path, "br", dt_utc)
+   if args.watermark: add_watermark(image_path, "br", dt_utc)
 
 
-def m(output_dir, user_agent, dt_utc, username, password, URL, watermark):
+def m(args, dt_utc, logger):
    """
    Takes a screenshot of the MetMaps page using the given URL.
    """
    # set the image path
-   image_path = Path(f"{output_dir}/metmaps_{dt_minutes_file(dt_utc)}.png")
+   image_path = Path(f"{args.output_dir}/metmaps_{dt_minutes_file(dt_utc)}.png")
    
    # use playwright to take a screenshot of the MetMaps page
    with sync_playwright() as p:  
@@ -171,22 +171,22 @@ def m(output_dir, user_agent, dt_utc, username, password, URL, watermark):
       browser  = p.chromium.launch()
       context  = browser.new_context(
          # set the user agent to the given user agent
-         user_agent        = user_agent,
-         http_credentials  = {"username": username, "password": password}
+         user_agent        = args.user_agent,
+         http_credentials  = {"username": args.username, "password": args.password}
       )
       # create a new page
       page     = context.new_page()
       
       # try to go to the URL
       try:
-         page.goto(URL)
+         page.goto(args.URL)
          page.wait_for_load_state('networkidle')
       # if an error occurs, handle it
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
-         if log:
+         if args.log:
             dtime = utcnow_seconds_str()
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
@@ -205,7 +205,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL, watermark):
          inputimage = page.locator('#inputimage').bounding_box()
       # if an error occurs, handle it
       except Exception as e:
-         if verbose:
+         if args.verbose:
             print(e)
             traceback.print_exc()
          if log:
@@ -229,7 +229,7 @@ def m(output_dir, user_agent, dt_utc, username, password, URL, watermark):
       browser.close()
    
    # add watermark to the image
-   if watermark: add_watermark(image_path, "br", dt_utc)
+   if args.watermark: add_watermark(image_path, "br", dt_utc)
 
 
 # get names of all user defined functions https://stackoverflow.com/a/60894911/12935487
@@ -405,7 +405,7 @@ if __name__ == '__main__':
          # create a new process for each site with the given arguments
          p = Process(
                target=site_function,
-               args=(args.output_dir, args.user_agent, dt_utc, args.username, args.password, args.URL, args.watermark)
+               args=(args, dt_utc, logger)
             )
          try:
             # start the process in the background

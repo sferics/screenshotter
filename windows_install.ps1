@@ -11,3 +11,6 @@ Invoke-WebRequest https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.e
 pip install -r requirements.txt
 # install chromium browser with all needed dependencies
 python -m playwright install --with-deps chromium
+
+# compile ems_screenshot.py to ems_screenshot.pyc
+python3 -m compileall -f ems_screenshot.py

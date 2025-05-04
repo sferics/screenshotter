@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.10"
+__version__ = "1.2.11"
 __author__  = "Juri Hubrig"
 
 
@@ -12,7 +12,7 @@ import configparser
 from pathlib import Path, PurePath
 from multiprocessing import Process
 from time import sleep
-from datetime import datetime as dt, timedelta as td
+from datetime import datetime as dt, timedelta as td, timezone as tz
 
 
 def u(args, dt_utc, logger):
@@ -26,11 +26,11 @@ def u(args, dt_utc, logger):
    # use playwright to take a screenshot of the UWZ weather warning map
    with sync_playwright() as p:
       # open the browser and go to the URL
-      browser  = p.chromium.launch()
+      browser  = p.firefox.launch()
       context  = browser.new_context(user_agent=args.user_agent)
       #context.set_default_timeout(55000)
       page     = context.new_page()
-      # set the viewport size
+      # set the viewport size, only needed when using iframe method
       #page.set_viewport_size({"width": 556, "height": 600})
       try:
          page.goto(args.URL)
@@ -44,7 +44,8 @@ def u(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       # click on cookie banner "ACCEPT", not necessary if we only use the iframe of weatherpro.com
       """
@@ -68,7 +69,8 @@ def u(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       # take a screenshot of the UWZ weather warning map
       page.screenshot(
@@ -99,7 +101,7 @@ def d(args, dt_utc, logger):
    with sync_playwright() as p:
       
       # open the browser and go to the URL
-      browser  = p.chromium.launch()
+      browser  = p.firefox.launch()
       context  = browser.new_context(user_agent=args.user_agent)
       page     = context.new_page()
       
@@ -116,13 +118,15 @@ def d(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       # wait for the map to be fully loaded
       try:
          page.wait_for_selector('#appBox') 
          page.wait_for_selector('#headerBox')
          page.wait_for_selector('#svgBox')
+         page.wait_for_load_state('networkidle')
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
@@ -133,7 +137,8 @@ def d(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       # get the bounding boxes of the elements
       app_box           = page.locator('#appBox').bounding_box()
@@ -168,7 +173,7 @@ def m(args, dt_utc, logger):
    with sync_playwright() as p:  
       
       # open the browser and go to the URL
-      browser  = p.chromium.launch()
+      browser  = p.firefox.launch()
       context  = browser.new_context(
          # set the user agent to the given user agent
          user_agent        = args.user_agent,
@@ -191,7 +196,8 @@ def m(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       #TODO fixme or delete
       """
@@ -213,7 +219,8 @@ def m(args, dt_utc, logger):
             err   = f"{e.__class__.__name__}: {e}"
             trace = traceback.format_exc()
             logger.error(f"{dtime}\n{err}\n{trace}{'-'*114}")
-         browser.close(reason=e); return
+         browser.close(reason=str(e))
+         return
       
       # take a screenshot of the image
       page.screenshot(
@@ -271,8 +278,11 @@ def add_watermark(image_path, position, dt_utc):
 
 
 # datetime functions for easier handling
-utcnow_minutes       = lambda : dt.utcnow().replace(second=0, microsecond=0)
-utcnow_seconds       = lambda : dt.utcnow().replace(microsecond=0)
+#utcnow_minutes       = lambda : dt.utcnow().replace(second=0, microsecond=0)
+#utcnow_seconds       = lambda : dt.utcnow().replace(microsecond=0)
+utcnow_minutes       = lambda : dt.now(tz.utc).replace(second=0, microsecond=0)
+utcnow_seconds       = lambda : dt.now(tz.utc).replace(microsecond=0)
+
 utcnow_minutes_str   = lambda : utcnow_minutes().strftime("%Y-%m-%d %H:%M")
 utcnow_seconds_str   = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
 utcnow_metmaps_str   = lambda : utcnow_seconds().strftime("%Y%m%d%H%M")
@@ -401,7 +411,8 @@ if __name__ == '__main__':
          # get the function for the desired site
          site_function = globals()[site]
          # get the current datetime in UTC timezone
-         dt_utc = dt.utcnow()
+         #dt_utc = dt.utcnow()
+         dt_utc = dt.now(tz.utc)
          # create a new process for each site with the given arguments
          p = Process(
                target=site_function,
@@ -476,7 +487,8 @@ if __name__ == '__main__':
    # check if start_datetime is 'now' or a valid datetime
    if start_datetime == "now":
       # get difference from now to the next full minute, so we know how much time we have to run the script
-      dt_now         = dt.utcnow()
+      #dt_now         = dt.utcnow()
+      dt_now         = dt.now(tz.utc)
       dt_next_minute = utcnow_minutes() + td(minutes=1)
       buffer_time    = 0
 
@@ -493,7 +505,8 @@ if __name__ == '__main__':
    
    elif len(start_datetime) == 4:
       # if only HHMM is given, take the current date and time
-      dt_now         = dt.utcnow()
+      #dt_now         = dt.utcnow()
+      dt_now         = dt.now(tz.utc)
       HHMM           = start_datetime
       start_datetime = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]))
    elif len(start_datetime) == 12:
@@ -506,7 +519,8 @@ if __name__ == '__main__':
    else: sys.exit("WRONG INPUT: start_datetime has to be 4 or 12 characters long!")
    
    # if the start_datetime is in the past, exit the script
-   if start_datetime < dt.utcnow():
+   #if start_datetime < dt.utcnow():
+   if start_datetime < dt.now(tz.utc):
       sys.exit("WRONG INPUT: start_datetime needs to be NOW or in the future!")
    
 
@@ -518,7 +532,8 @@ if __name__ == '__main__':
    # if end_datetime is 'now', take a screenshot immediately and exit the script
    elif len(end_datetime) == 4:
       # if only HHMM is given, take the current date and time
-      dt_now         = dt.utcnow()
+      #dt_now         = dt.utcnow()
+      dt_now         = dt.now(tz.utc)
       HHMM           = end_datetime
       end_datetime   = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]))
    elif len(end_datetime) == 12:
@@ -538,16 +553,19 @@ if __name__ == '__main__':
    else: sys.exit("WRONG INPUT: end_datetime has to be 4 or 12 characters long!")
    
    # if the end_datetime is in the past, exit the script
-   if end_datetime <= dt.utcnow():
+   #if end_datetime <= dt.utcnow():
+   if end_datetime <= dt.now(tz.utc):
       sys.exit("WRONG INPUT: end_datetime needs to be in the future!")
    
 
    # wait for start time to begin
-   while dt.utcnow() < start_datetime:
+   #while dt.utcnow() < start_datetime:
+   while dt.now(tz.utc) < start_datetime:
       # if verbose is True, print the remaining time
       if verbose:
          # get the remaining time until the start_datetime
-         remaining_time = start_datetime - dt.utcnow()
+         #remaining_time = start_datetime - dt.utcnow()
+         remaining_time = start_datetime - dt.now(tz.utc)
          # clear the all previous output and print the remaining time
          clear_output()
          print(f"Waiting for next full minute to start (remaining time: {remaining_time})...")
@@ -558,13 +576,15 @@ if __name__ == '__main__':
    if verbose: print("Starting to take screenshot(s) NOW...")
    
    # start taking screenshots
-   while dt.utcnow() <= end_datetime:
+   #while dt.utcnow() <= end_datetime:
+   while dt.now(tz.utc) <= end_datetime:
       
       # if verbose is True, print the current datetime
       if verbose:
          # clear the all previous output and print the current datetime
          #clear_output()
-         print(f"Taking screenshot(s) at {dt.utcnow()}...")
+         #print(f"Taking screenshot(s) at {utcnow_seconds_str()}...")
+         print(f"Taking screenshot(s) at {utcnow_seconds_str()}...")
       # take screenshots of all desired sites
       get_screenshots(join=args.join)
       

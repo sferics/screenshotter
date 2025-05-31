@@ -90,7 +90,7 @@
   ```bash
   python3 ems_screenshotter.py --help
   ```
-- Die wichtigsten Kommandozeilen-Argumente sind:
+- Die wichtigsten Kommandozeilen-Argumente sind:<br><br>
 `start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`).<br>
 `--sites/-s`: Eine Liste von Websites, die gescreenshotet werden sollen. Diese Liste kann durch Kommata getrennt werden. Wenn keine Websites angegeben sind, werden alle in der Konfiguration definierten Websites gescreenshotet.<br>
 `--output_dir/-o`: Der Pfad zum Verzeichnis, in dem die Screenshots gespeichert werden sollen. Wenn kein Pfad angegeben ist, wird das aktuelle Verzeichnis verwendet.<br>

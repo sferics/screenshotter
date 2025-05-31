@@ -2,6 +2,10 @@
 
 ## 1. Installation
 
+[Windows](#windows)
+[macOS](#macos)
+[Ubuntu](#ubuntu)
+
 ### Windows
 - Unter Windows muss das Script `windows_install.ps1` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
 - Falls die Ausführung durch eine Systemrichtlinie blockiert wird, kann die Ausführung der PowerShell-Skripte temporär mit folgendem Befehl erlaubt werden:
@@ -22,7 +26,7 @@
 - Die Installation ist damit abgeschlossen und der Screenshotter kann verwendet werden.
 
 
-### MacOS
+### macOS
 - Unter MacOS muss das Script `macos_install.sh` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
    ```bash
    sudo bash macos_install.sh
@@ -95,6 +99,11 @@
 
 
 ## 4. Automatisierung (cronjob)
+
+[macOS und Linux](#macos-und-linux)
+[Windows](#windows)
+
+## macOS und Linux
 - Der Screenshotter kann automatisiert über einen Cronjob ausgeführt werden.
 - Ein Cronjob ist ein zeitgesteuertes Skript, das regelmäßig ausgeführt wird.
 - Um einen Cronjob zu erstellen, muss die Crontab-Datei bearbeitet werden.
@@ -102,7 +111,6 @@
   ```bash
   crontab -e
   ```
-- Unter Windows kann die Aufgabenplanung verwendet werden, um einen zeitgesteuerten Task zu erstellen.
 - Ein Beispiel für einen Cronjob, der den Screenshotter alle 5 Minuten ausführt, könnte wie folgt aussehen:
   ```bash
   */5 * * * * /usr/bin/python3 /path/to/ems_screenshotter.py
@@ -116,7 +124,10 @@
 - Um sicher zu gehen, dass der Cronjob richtig funktioniert, sollte die Log-Datei regelmäßig überprüft werden.
 - Die Log-Datei kann auch verwendet werden, um die Leistung des Screenshotters zu überwachen und sicherzustellen, dass er die erwarteten Ergebnisse liefert.
 - Die Konfiguration des Cronjobs kann je nach Betriebssystem und Version variieren, daher ist es wichtig, die Dokumentation des jeweiligen Systems zu konsultieren, um sicherzustellen, dass der Cronjob korrekt eingerichtet ist.
-- Unter Windows lässt sich folgende Syntax verwenden, um den Screenshotter zu automatisieren. Hier ein Beispiel für einen Task, der alle 5 Minuten ausgeführt wird:
+
+### Windows
+- Unter Windows kann die Aufgabenplanung verwendet werden, um einen zeitgesteuerten Task zu erstellen.
+- Alternativ lässt sich folgende Syntax verwenden, um den Screenshotter zu automatisieren. Hier ein Beispiel für einen Task, der alle 5 Minuten ausgeführt wird:
   ```powershell
   New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "python" -Argument "C:\path\to\ems_screenshotter.py") -Trigger (New-ScheduledTaskTrigger -AtStartup -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration ([TimeSpan]::MaxValue)) -RunLevel Highest | Register-ScheduledTask -TaskName "EMS_Screenshotter"
   ```

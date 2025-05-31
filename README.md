@@ -57,7 +57,7 @@
 - Die Konfiguration des Screenshotters erfolgt über die Datei `config.ini`.
 - Diese Datei enthält alle notwendigen Einstellungen, die für die Ausführung des Screenshotters benötigt werden.
 - Die Datei ist in verschiedene Abschnitte unterteilt, die jeweils eine bestimmte Funktion haben.
-- Die wichtigsten Abschnitte sind:
+- Die Abschnitte sind:
   - `[general]`: Allgemeine Einstellungen, wie das Intervall zwischen den Screenshots.
   - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
   - `[debug]`: Einstellungen für den Debug-Modus, wie z.B. die Aktivierung des Loggings (log) und Debug-Ausgaben (verbose).

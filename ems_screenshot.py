@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 __author__  = "Juri Hubrig"
 
 
@@ -380,26 +380,30 @@ if __name__ == '__main__':
    config = configparser.ConfigParser(interpolation=None)
    config.read('config.ini')
    
-   # facilitate access to general config
+   # facilitate access to config sections
    cf_general        = config["general"]
-   # get general config settings
+   cf_debug          = config["debug"]
+   cf_playwright     = config["browser"]
+   cf_metmaps        = config["metmaps"]
+    
+   # get general config elements
    cf_start_datetime = cf_general["start_datetime"]
    cf_end_datetime   = cf_general["end_datetime"]
    cf_output_dir     = cf_general["output_dir"]
    cf_interval       = cf_general["interval"]
    cf_sites          = cf_general["sites"]
    cf_watermark      = cf_general["watermark"]
-   cf_user_agent     = cf_general["user_agent"]
-   cf_log            = cf_general["log"]
-   cf_verbose        = cf_general["verbose"]
-   cf_join           = cf_general["join"]
-   cf_browser        = cf_general["browser"]
-   cf_timeout        = cf_general["timeout"]
-   cf_network_idle   = cf_general["network_idle"]
-
-   # same with metmaps-specific config
-   cf_metmaps  = config["metmaps"]
-   # get metmaps-specific config settings
+   # get debug config elements
+   cf_log            = cf_debug["log"]
+   cf_verbose        = cf_debug["verbose"]
+   cf_join           = cf_debug["join"]
+   # get playwright config elements
+   cf_user_agent     = cf_playwright["user_agent"]
+   cf_browser        = cf_playwright["browser"]
+   cf_timeout        = cf_playwright["timeout"]
+   cf_network_idle   = cf_playwright["network_idle"]
+    
+   # get metmaps-specific config elements
    cf_username = cf_metmaps["username"]
    cf_password = cf_metmaps["password"]
    cf_URL      = cf_metmaps["URL"]

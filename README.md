@@ -34,7 +34,7 @@
 - Dann wird noch der Chromium-Headless-Browser installiert, der für die Screenshots benötigt wird.
 - Die Installation des Browsers kann einige Zeit in Anspruch nehmen, da er heruntergeladen und entpackt werden muss.
 - Als letzter Schritt wird das Skript `ems_screenshotter.py` als eine .pyc-Datei kompiliert, um die Ausführung zu beschleunigen.
-
+- Die Installation ist damit abgeschlossen und der Screenshotter kann verwendet werden.
 
 ### Ubuntu
 - Unter Ubuntu muss das Script `ubuntu_install.sh` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
@@ -43,9 +43,9 @@
    ```
 - Die Installation installiert die Abhängigkeiten und legt die Umgebungsvariablen an, die für die Ausführung des Screenshotters notwendig sind.
 - Zuerst wird Python 3.13 installiert und der Nutzer muss den Anweisungen folgen, um die Installation abzuschließen.
-- Die Python-Executable sollte automatisch in den Umgebungsvariablen eingetragen werden, falls nicht, muss dies manuell erfolgen.
+- Die Python-Executable sollte automatisch in den Umgebungsvariablen eingetragen werden, falls nicht, muss dies manuell erfolgen. Liegt Python im Standardinstalltions-Pfad von Ubuntu, kann dies mit folgendem Befehl erfolgen:
     ```bash
-    export PATH="/usr/local/bin/python3.13:$PATH"
+    export PATH="/usr/bin/python3.13:$PATH"
     ```
 - Anschließend werden die benötigten Python-Pakete installiert, die in der `requirements.txt` definiert sind.
 - Dann wird noch der Chromium-Headless-Browser installiert, der für die Screenshots benötigt wird.
@@ -58,7 +58,9 @@
 - Diese Datei enthält alle notwendigen Einstellungen, die für die Ausführung des Screenshotters benötigt werden.
 - Die Datei ist in verschiedene Abschnitte unterteilt, die jeweils eine bestimmte Funktion haben.
 - Die wichtigsten Abschnitte sind:
-  - `[general]`: Allgemeine Einstellungen, wie z.B. der Pfad zum Chromium-Browser.
+  - `[general]`: Allgemeine Einstellungen, wie das Intervall zwischen den Screenshots.
+  - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
+  - `[debug]`: Einstellungen für den Debug-Modus, wie z.B. die Aktivierung des Loggings (log) und Debug-Ausgaben (verbose).
   - `[metmaps]`: Einstellungen für die Metamaps, wie z.B. die URL der Metamap-API.
 - Die Konfiguration kann manuell angepasst werden, um die gewünschten Einstellungen vorzunehmen.
 - Es ist wichtig, die Konfiguration vor der ersten Ausführung des Screenshotters anzupassen, um sicherzustellen, dass alle Einstellungen korrekt sind.

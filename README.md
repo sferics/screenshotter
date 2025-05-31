@@ -95,7 +95,7 @@
 `--join/-j`: Nutze den Befehl Process.join() aus dem multiprocessing-Modul, um sicherzustellen, dass der Screenshotter wartet, bis alle Prozesse abgeschlossen sind, bevor er fortfährt. Dies ist besonders nützlich, wenn mehrere Screenshots gleichzeitig erstellt werden.<br>
 `--browser/-b`: Der Browser, der für die Screenshots verwendet werden soll. Standardmäßig wird der in der Konfiguration definierte Browser verwendet. Es kann jedoch auch ein anderer Browser angegeben werden, z.B. `chromium` oder `firefox`.<br>
 `--timeout/-t`: Die maximale Wartezeit in Sekunden, bevor der Screenshot erstellt wird. Wenn kein Timeout angegeben ist, wird das in der Konfiguration definierte Timeout verwendet.<br>
-`--network\_idle/-n`: Aktiviert den Netzwerk-Leerlauf-Modus, der sicherstellt, dass der Screenshot erst erstellt wird, wenn keine Netzwerkaktivität mehr stattfindet. Dies kann nützlich sein, um sicherzustellen, dass alle Inhalte der Seite vollständig geladen sind, bevor der Screenshot erstellt wird.<br>
+`--network_idle/-n`: Aktiviert den Netzwerk-Leerlauf-Modus, der sicherstellt, dass der Screenshot erst erstellt wird, wenn keine Netzwerkaktivität mehr stattfindet. Dies kann nützlich sein, um sicherzustellen, dass alle Inhalte der Seite vollständig geladen sind, bevor der Screenshot erstellt wird.<br>
 
 
 ## 4. Automatisierung (cronjob)

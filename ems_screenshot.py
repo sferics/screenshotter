@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.2.11"
+__version__ = "1.3.0"
 __author__  = "Juri Hubrig"
 
 
@@ -10,9 +10,14 @@ import argparse
 import traceback
 import configparser
 from pathlib import Path, PurePath
-from multiprocessing import Process
+#from multiprocessing import Process
+from Process import Process
 from time import sleep
 from datetime import datetime as dt, timedelta as td, timezone as tz
+
+
+# define the available browsers
+browsers_available = {"chromium", "chrome", "firefox", "edge", "webkit"}
 
 
 def u(args, dt_utc, logger):
@@ -25,15 +30,33 @@ def u(args, dt_utc, logger):
 
    # use playwright to take a screenshot of the UWZ weather warning map
    with sync_playwright() as p:
-      # open the browser and go to the URL
-      browser  = p.firefox.launch()
+      
+      # open the chosen browser
+      match args.browser:
+         case "chromium":
+            browser  = p.chromium.launch()
+         case "chrome":
+            browser  = p.chromium.launch(channel="chrome")
+         case "firefox":
+            browser = p.firefox.launch()
+         case "edge":
+            browser = p.chromium.launch(channel="msedge")
+         case "webkit":
+            browser = p.webkit.launch()
+         case _:
+            err = f"Browser {args.browser} not supported. Please choose from {browsers_available}."
+            if verbose: print(err)
+            logger.error(err)
+            return
+
+      # create a new browser context with the given user agent and credentials
       context  = browser.new_context(user_agent=args.user_agent)
       #context.set_default_timeout(55000)
       page     = context.new_page()
       # set the viewport size, only needed when using iframe method
       #page.set_viewport_size({"width": 556, "height": 600})
       try:
-         page.goto(args.URL)
+         page.goto(URL)
          page.wait_for_load_state("load")
       except Exception as e:
          if args.verbose:
@@ -100,14 +123,31 @@ def d(args, dt_utc, logger):
    # use playwright to take a screenshot of the DWD weather warning map
    with sync_playwright() as p:
       
-      # open the browser and go to the URL
-      browser  = p.firefox.launch()
+      # open the chosen browser
+      match args.browser:
+         case "chromium":
+            browser  = p.chromium.launch()
+         case "chrome":
+            browser  = p.chromium.launch(channel="chrome")
+         case "firefox":
+            browser = p.firefox.launch()
+         case "edge":
+            browser = p.chromium.launch(channel="msedge")
+         case "webkit":
+            browser = p.webkit.launch()
+         case _:
+            err = f"Browser {args.browser} not supported. Please choose from {browsers_available}."
+            if verbose: print(err)
+            logger.error(err)
+            return
+
+      # create a new browser context with the given user agent and credentials
       context  = browser.new_context(user_agent=args.user_agent)
       page     = context.new_page()
       
       # try to go to the URL
       try:
-         page.goto(args.URL)
+         page.goto(URL)
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
@@ -171,14 +211,25 @@ def m(args, dt_utc, logger):
    
    # use playwright to take a screenshot of the MetMaps page
    with sync_playwright() as p:  
-      
-      # open the browser and go to the URL
-      browser  = p.firefox.launch()
-      context  = browser.new_context(
-         # set the user agent to the given user agent
-         user_agent        = args.user_agent,
-         http_credentials  = {"username": args.username, "password": args.password}
-      )
+      # open the chosen browser
+      match args.browser:
+         case "chromium":
+            browser  = p.chromium.launch()
+         case "chrome":
+            browser  = p.chromium.launch(channel="chrome")
+         case "firefox":
+            browser = p.firefox.launch()
+         case "edge":
+            browser = p.chromium.launch(channel="msedge")
+         case "webkit":
+            browser = p.webkit.launch()
+         case _:
+            err = f"Browser {args.browser} not supported. Please choose from {browsers_available}."
+            if verbose: print(err)
+            logger.error(err)
+            return 
+      # create a new browser context with the given user agent and credentials
+      context  = browser.new_context(user_agent = args.user_agent, http_credentials  = {"username": args.username, "password": args.password})
       # create a new page
       page     = context.new_page()
       
@@ -301,7 +352,7 @@ def clear_output():
 
 
 if __name__ == '__main__':
-   
+
    # read the config file
    config = configparser.ConfigParser(interpolation=None)
    config.read('config.ini')
@@ -319,6 +370,8 @@ if __name__ == '__main__':
    cf_log            = cf_general["log"]
    cf_verbose        = cf_general["verbose"]
    cf_join           = cf_general["join"]
+   cf_browser        = cf_general["browser"]
+   cf_timeout        = cf_general["timeout"]
    
    # same with metmaps-specific config
    cf_metmaps  = config["metmaps"]
@@ -351,12 +404,15 @@ if __name__ == '__main__':
    parser.add_argument('-l', '--log', action='store_true', default=cf_log, help="Enable logging")
    parser.add_argument('-v', '--verbose', action='store_true', default=cf_verbose, help="Print verbose output")
    parser.add_argument('-j', '--join', action='store_true', help="Join the processes")
+   parser.add_argument('-b', '--browser', default=cf_browser, choices=browsers_available, help="Choose the headless browser (e.g. chromium, firefox or other supported/installed browser)")
+   parser.add_argument('-t', '--timeout', default=cf_timeout, type=int, help="Timeout for the browser in seconds")
+   
    
    # parse command line arguments
    args     = parser.parse_args()
    # set verbose variable to the value of the command line argument
    verbose  = args.verbose
-   
+
    # if verbose print execution time and command line arguments
    if verbose:
       print(f"Execution time: {utcnow_seconds_str()}")
@@ -364,6 +420,8 @@ if __name__ == '__main__':
       for arg in vars(args):
          print(f"{arg}: {getattr(args, arg)}")
    
+   args.timeout *= 1000  # convert seconds to milliseconds for playwright
+
    # if the URL contains a datetime, replace it with the current datetime
    # replace a tim=YYYYmmddHHMM with the current datetime using regex
    if "tim=" in cf_URL:
@@ -404,7 +462,7 @@ if __name__ == '__main__':
       """
       Takes screenshots of the desired sites.
       """
-      error = False
+      errors = {}
 
       # take screenshots for each desired website
       for site in sites:
@@ -424,7 +482,7 @@ if __name__ == '__main__':
             # if join is True, wait for the process to finish
             if join: p.join()
          except Exception as e:
-            error = True
+            errors[site] = e
             if verbose:
                print(e)
                traceback.print_exc()
@@ -438,7 +496,7 @@ if __name__ == '__main__':
                # if the process is still running, close it
                p.close()
             except Exception as e:
-               error = True
+               errors[site] = e
                if verbose:
                   print(e)
                   traceback.print_exc()
@@ -451,7 +509,7 @@ if __name__ == '__main__':
                try:
                   p.terminate()
                except Exception as e:
-                  error = True
+                  errors[site] = e
                   if verbose:
                      print(e)
                      traceback.print_exc()
@@ -467,10 +525,10 @@ if __name__ == '__main__':
                # see https://stackoverflow.com/questions/11551996/why-do-we-need-the-finally-clause-in-python
                finally: continue
             finally: continue
-         finally: continue 
+         finally: continue
      
-      # if we had an error, return True, else False
-      return error
+      # if we had errors, return them else the empty dict
+      return errors
    
 
    # if 2 command line arguments are present, take them as start and end datetimes
@@ -545,9 +603,10 @@ if __name__ == '__main__':
    elif end_datetime == "now":
       # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
-      error = get_screenshots(join=args.join)
-      if not error:
-         print(f"Successfully took screenshot(s) at {utcnow_seconds_str()}")
+      errors = get_screenshots(join=args.join)
+      if errors:
+         for e in errors:
+             print(f"Error while taking screenshot(s) for {e}: {errors[e]}")
       sys.exit()
    # if the input is not valid, exit the script
    else: sys.exit("WRONG INPUT: end_datetime has to be 4 or 12 characters long!")

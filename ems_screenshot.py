@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 __author__  = "Juri Hubrig"
 
 
@@ -10,8 +10,7 @@ import argparse
 import traceback
 import configparser
 from pathlib import Path, PurePath
-#from multiprocessing import Process
-from Process import Process
+from multiprocessing import Process
 from time import sleep
 from datetime import datetime as dt, timedelta as td, timezone as tz
 

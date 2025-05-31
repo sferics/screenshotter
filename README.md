@@ -2,9 +2,9 @@
 
 ## 1. Installation
 
-[Windows](#windows)
-[macOS](#macos)
-[Ubuntu](#ubuntu)
+[Windows](#windows)<br>
+[macOS](#macos)<br>
+[Ubuntu](#ubuntu)<br>
 
 ### Windows
 - Unter Windows muss das Script `windows_install.ps1` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
@@ -85,23 +85,23 @@
   python3 ems_screenshotter.py --help
   ```
 - Die wichtigsten Kommandozeilen-Argumente sind:
-`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`).
-`--sites/-s`: Eine Liste von Websites, die gescreenshotet werden sollen. Diese Liste kann durch Kommata getrennt werden. Wenn keine Websites angegeben sind, werden alle in der Konfiguration definierten Websites gescreenshotet.
-`--output_dir/-o`: Der Pfad zum Verzeichnis, in dem die Screenshots gespeichert werden sollen. Wenn kein Pfad angegeben ist, wird das aktuelle Verzeichnis verwendet.
-`--verbose/-v`: Aktiviert den ausführlichen Modus, der zusätzliche Informationen während der Ausführung des Screenshotters ausgibt.
-`--interval/-i`: Das Intervall in Sekunden, in dem die Screenshots erstellt werden sollen. Wenn kein Intervall angegeben ist, wird das in der Konfiguration definierte Intervall verwendet.
-`--user_agent/-u`: Der User-Agent, der für die Screenshots verwendet werden soll. Wenn kein User-Agent angegeben ist, wird der Standard-User-Agent aus der Konfiguration verwendet.
-`--watermark/-w`: Fügt einen Wasserzeichen (Datum und Uhrzeit) zu den Screenshots hinzu.
-`--join/-j`: Nutze den Befehl Process.join() aus dem multiprocessing-Modul, um sicherzustellen, dass der Screenshotter wartet, bis alle Prozesse abgeschlossen sind, bevor er fortfährt. Dies ist besonders nützlich, wenn mehrere Screenshots gleichzeitig erstellt werden.
-`--browser/-b`: Der Browser, der für die Screenshots verwendet werden soll. Standardmäßig wird der in der Konfiguration definierte Browser verwendet. Es kann jedoch auch ein anderer Browser angegeben werden, z.B. `chromium` oder `firefox`.
-`--timeout/-t`: Die maximale Wartezeit in Sekunden, bevor der Screenshot erstellt wird. Wenn kein Timeout angegeben ist, wird das in der Konfiguration definierte Timeout verwendet.
-`--network\_idle/-n`: Aktiviert den Netzwerk-Leerlauf-Modus, der sicherstellt, dass der Screenshot erst erstellt wird, wenn keine Netzwerkaktivität mehr stattfindet. Dies kann nützlich sein, um sicherzustellen, dass alle Inhalte der Seite vollständig geladen sind, bevor der Screenshot erstellt wird.
+`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`).<br>
+`--sites/-s`: Eine Liste von Websites, die gescreenshotet werden sollen. Diese Liste kann durch Kommata getrennt werden. Wenn keine Websites angegeben sind, werden alle in der Konfiguration definierten Websites gescreenshotet.<br>
+`--output_dir/-o`: Der Pfad zum Verzeichnis, in dem die Screenshots gespeichert werden sollen. Wenn kein Pfad angegeben ist, wird das aktuelle Verzeichnis verwendet.<br>
+`--verbose/-v`: Aktiviert den ausführlichen Modus, der zusätzliche Informationen während der Ausführung des Screenshotters ausgibt.<br>
+`--interval/-i`: Das Intervall in Sekunden, in dem die Screenshots erstellt werden sollen. Wenn kein Intervall angegeben ist, wird das in der Konfiguration definierte Intervall verwendet.<br>
+`--user_agent/-u`: Der User-Agent, der für die Screenshots verwendet werden soll. Wenn kein User-Agent angegeben ist, wird der Standard-User-Agent aus der Konfiguration verwendet.<br>
+`--watermark/-w`: Fügt einen Wasserzeichen (Datum und Uhrzeit) zu den Screenshots hinzu.<br>
+`--join/-j`: Nutze den Befehl Process.join() aus dem multiprocessing-Modul, um sicherzustellen, dass der Screenshotter wartet, bis alle Prozesse abgeschlossen sind, bevor er fortfährt. Dies ist besonders nützlich, wenn mehrere Screenshots gleichzeitig erstellt werden.<br>
+`--browser/-b`: Der Browser, der für die Screenshots verwendet werden soll. Standardmäßig wird der in der Konfiguration definierte Browser verwendet. Es kann jedoch auch ein anderer Browser angegeben werden, z.B. `chromium` oder `firefox`.<br>
+`--timeout/-t`: Die maximale Wartezeit in Sekunden, bevor der Screenshot erstellt wird. Wenn kein Timeout angegeben ist, wird das in der Konfiguration definierte Timeout verwendet.<br>
+`--network\_idle/-n`: Aktiviert den Netzwerk-Leerlauf-Modus, der sicherstellt, dass der Screenshot erst erstellt wird, wenn keine Netzwerkaktivität mehr stattfindet. Dies kann nützlich sein, um sicherzustellen, dass alle Inhalte der Seite vollständig geladen sind, bevor der Screenshot erstellt wird.<br>
 
 
 ## 4. Automatisierung (cronjob)
 
-[macOS und Linux](#macos-und-linux)
-[Windows](#windows)
+[macOS und Linux](#macos-und-linux)<br>
+[Windows](#windows)<br>
 
 ## macOS und Linux
 - Der Screenshotter kann automatisiert über einen Cronjob ausgeführt werden.

@@ -430,7 +430,7 @@ if __name__ == '__main__':
    parser.add_argument('-j', '--join', action='store_true', help="Join the processes")
    parser.add_argument('-b', '--browser', default=cf_browser, choices=browsers_available, help="Choose the headless browser (e.g. chromium, firefox or other supported/installed browser)")
    parser.add_argument('-t', '--timeout', default=cf_timeout, type=int, help="Timeout for the browser in seconds")
-   parser.add_argument('--network_idle', action='store_true', default=cf_network_idle, help="Wait for network idle state before taking screenshot (default: False)")
+   parser.add_argument('-n', '--network_idle', action='store_true', default=cf_network_idle, help="Wait for network idle state before taking screenshot (default: False)")
    
    # parse command line arguments
    args     = parser.parse_args()

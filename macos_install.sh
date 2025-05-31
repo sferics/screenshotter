@@ -12,8 +12,8 @@ else
    export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 fi
 
-# install python version 3.8
-brew install python@3.8
+# install python version 3.13
+brew install python@3.13
 
 # install all required python packages
 pip install -r requirements.txt

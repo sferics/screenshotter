@@ -1,5 +1,11 @@
 # Dokumentation des Screenshotters
 
+[1. Installation](#1-installation)<br>
+[2. Konfiguration](#2-konfiguration)<br>
+[3. Benutzung und Kommandozeilen-Argumente](#3-benutzung-und-kommandozeilen-argumente)<br>
+[4. Automatisierung (cronjob)](#4-automatisierung-cronjob)<br>
+[5. Fehlerbehebung](#5-fehlerbehebung)<br>
+
 ## 1. Installation
 
 [Windows](#windows)<br>

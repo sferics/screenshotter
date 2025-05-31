@@ -92,7 +92,7 @@
 `--interval/-i`: Das Intervall in Sekunden, in dem die Screenshots erstellt werden sollen. Wenn kein Intervall angegeben ist, wird das in der Konfiguration definierte Intervall verwendet.
 `--user_agent/-u`: Der User-Agent, der für die Screenshots verwendet werden soll. Wenn kein User-Agent angegeben ist, wird der Standard-User-Agent aus der Konfiguration verwendet.
 `--watermark/-w`: Fügt einen Wasserzeichen (Datum und Uhrzeit) zu den Screenshots hinzu.
-`--join/-j`:` Nutze den Befehl Process.join() aus dem multiprocessing-Modul, um sicherzustellen, dass der Screenshotter wartet, bis alle Prozesse abgeschlossen sind, bevor er fortfährt. Dies ist besonders nützlich, wenn mehrere Screenshots gleichzeitig erstellt werden.
+`--join/-j`: Nutze den Befehl Process.join() aus dem multiprocessing-Modul, um sicherzustellen, dass der Screenshotter wartet, bis alle Prozesse abgeschlossen sind, bevor er fortfährt. Dies ist besonders nützlich, wenn mehrere Screenshots gleichzeitig erstellt werden.
 `--browser/-b`: Der Browser, der für die Screenshots verwendet werden soll. Standardmäßig wird der in der Konfiguration definierte Browser verwendet. Es kann jedoch auch ein anderer Browser angegeben werden, z.B. `chromium` oder `firefox`.
 `--timeout/-t`: Die maximale Wartezeit in Sekunden, bevor der Screenshot erstellt wird. Wenn kein Timeout angegeben ist, wird das in der Konfiguration definierte Timeout verwendet.
 `--network\_idle/-n`: Aktiviert den Netzwerk-Leerlauf-Modus, der sicherstellt, dass der Screenshot erst erstellt wird, wenn keine Netzwerkaktivität mehr stattfindet. Dies kann nützlich sein, um sicherzustellen, dass alle Inhalte der Seite vollständig geladen sind, bevor der Screenshot erstellt wird.

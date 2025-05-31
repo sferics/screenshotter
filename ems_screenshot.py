@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 __author__  = "Juri Hubrig"
 
 
@@ -51,8 +51,10 @@ def u(args, dt_utc, logger):
 
       # create a new browser context with the given user agent and credentials
       context  = browser.new_context(user_agent=args.user_agent)
-      #context.set_default_timeout(55000)
       page     = context.new_page()
+      # set the default timeout for the context and page
+      context.set_default_timeout(args.timeout)
+      page.set_default_timeout(args.timeout)
       # set the viewport size, only needed when using iframe method
       #page.set_viewport_size({"width": 556, "height": 600})
       try:
@@ -144,7 +146,10 @@ def d(args, dt_utc, logger):
       # create a new browser context with the given user agent and credentials
       context  = browser.new_context(user_agent=args.user_agent)
       page     = context.new_page()
-      
+      # set the default timeout for the context and page
+      context.set_default_timeout(args.timeout)
+      page.set_default_timeout(args.timeout)
+        
       # try to go to the URL
       try:
          page.goto(URL)
@@ -229,9 +234,15 @@ def m(args, dt_utc, logger):
             logger.error(err)
             return 
       # create a new browser context with the given user agent and credentials
-      context  = browser.new_context(user_agent = args.user_agent, http_credentials  = {"username": args.username, "password": args.password})
+      context  = browser.new_context(
+         user_agent = args.user_agent,
+         http_credentials  = {"username": args.username, "password": args.password}
+      )
       # create a new page
       page     = context.new_page()
+      # set the default timeout for the context and page
+      context.set_default_timeout(args.timeout)
+      page.set_default_timeout(args.timeout)
       
       # try to go to the URL
       try:

@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 __author__  = "Juri Hubrig"
 
 
@@ -82,7 +82,12 @@ def u(args, dt_utc, logger):
       try:
          locator = page.locator('#mapContainer').locator('.leaflet-map-pane').locator('.leaflet-overlay-pane').locator('.leaflet-zoom-animated').locator('g')
          locator.wait_for()
-         page.wait_for_load_state('networkidle')
+         # if network_idle is True, wait for the network to be idle
+         if args.network_idle:
+            page.wait_for_load_state('networkidle')
+         # else just wait for the correct load state
+         else:
+            page.wait_for_load_state('load')
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
@@ -170,7 +175,11 @@ def d(args, dt_utc, logger):
          page.wait_for_selector('#appBox') 
          page.wait_for_selector('#headerBox')
          page.wait_for_selector('#svgBox')
-         page.wait_for_load_state('networkidle')
+         # if network_idle is True, wait for the network to be idle
+         if args.network_idle:
+            page.wait_for_load_state('networkidle')
+         # else just wait for the correct load state
+         else:                                                                                                  page.wait_for_load_state('load')
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
@@ -246,7 +255,11 @@ def m(args, dt_utc, logger):
       # try to go to the URL
       try:
          page.goto(args.URL)
-         page.wait_for_load_state('networkidle')
+         # if network_idle is True, wait for the network to be idle
+         if args.network_idle:
+            page.wait_for_load_state('networkidle')
+         # else just wait for the correct load state
+         else:                                                                                                  page.wait_for_load_state('load')
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
@@ -382,7 +395,8 @@ if __name__ == '__main__':
    cf_join           = cf_general["join"]
    cf_browser        = cf_general["browser"]
    cf_timeout        = cf_general["timeout"]
-   
+   cf_network_idle   = cf_general["network_idle"]
+
    # same with metmaps-specific config
    cf_metmaps  = config["metmaps"]
    # get metmaps-specific config settings
@@ -416,7 +430,7 @@ if __name__ == '__main__':
    parser.add_argument('-j', '--join', action='store_true', help="Join the processes")
    parser.add_argument('-b', '--browser', default=cf_browser, choices=browsers_available, help="Choose the headless browser (e.g. chromium, firefox or other supported/installed browser)")
    parser.add_argument('-t', '--timeout', default=cf_timeout, type=int, help="Timeout for the browser in seconds")
-   
+   parser.add_argument('--network_idle', action='store_true', default=cf_network_idle, help="Wait for network idle state before taking screenshot (default: False)")
    
    # parse command line arguments
    args     = parser.parse_args()

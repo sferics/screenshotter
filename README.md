@@ -69,8 +69,8 @@
 - Die Datei ist in verschiedene Abschnitte unterteilt, die jeweils eine bestimmte Funktion haben.
 - Die Abschnitte sind:
   - `[general]`: Allgemeine Einstellungen, wie das Intervall zwischen den Screenshots.
-  - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
   - `[debug]`: Einstellungen für den Debug-Modus, wie z.B. die Aktivierung des Loggings (log) und Debug-Ausgaben (verbose).
+  - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
   - `[metmaps]`: Einstellungen für die Metamaps, wie z.B. die URL der Metamap-API.
 - Die Konfiguration kann manuell angepasst werden, um die gewünschten Einstellungen vorzunehmen.
 - Es ist wichtig, die Konfiguration vor der ersten Ausführung des Screenshotters anzupassen, um sicherzustellen, dass alle Einstellungen korrekt sind.
@@ -91,7 +91,7 @@
   python3 ems_screenshotter.py --help
   ```
 - Die wichtigsten Kommandozeilen-Argumente sind:<br><br>
-`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`). Steht dort `end_datetime = max` läuft der Screenshotter (theoretisch) unendlich weiter!<br>
+`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`). Steht dort `end_datetime = max` läuft der Screenshotter (theoretisch) unendlich weiter! `start_datetime = now` dagegen sorgt dafür, dass ein Screenshot JETZT aufgenommen wird.<br>
 `--sites/-s`: Eine Liste von Websites, die gescreenshotet werden sollen. Diese Liste kann durch Kommata getrennt werden. Wenn keine Websites angegeben sind, werden alle in der Konfiguration definierten Websites gescreenshotet.<br>
 `--output_dir/-o`: Der Pfad zum Verzeichnis, in dem die Screenshots gespeichert werden sollen. Wenn kein Pfad angegeben ist, wird das aktuelle Verzeichnis verwendet.<br>
 `--verbose/-v`: Aktiviert den ausführlichen Modus, der zusätzliche Informationen während der Ausführung des Screenshotters ausgibt.<br>

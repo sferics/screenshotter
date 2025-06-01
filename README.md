@@ -16,11 +16,15 @@
 - Unter Windows muss das Script `windows_install.ps1` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
 - Falls die Ausführung durch eine Systemrichtlinie blockiert wird, kann die Ausführung der PowerShell-Skripte temporär mit folgendem Befehl erlaubt werden:
   ```powershell
-  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
   ```
 - Danach die PowerShell neu starten und das Skript erneut ausführen.
   ```powershell
   .\windows_install.ps1
+  ```
+- Anschließend die `ExecutionPolicy` wieder auf `Restricted` setzen.
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
   ```
 - Die Installation installiert die Abhängigkeiten und legt die Umgebungsvariablen an, die für die Ausführung des Screenshotters notwendig sind.
 - Zuerst wird Python 3.13 installiert und der Nutzer muss den Anweisungen folgen, um die Installation abzuschließen.

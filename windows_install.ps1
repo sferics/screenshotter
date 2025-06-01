@@ -17,3 +17,6 @@ python -m playwright install --with-deps chromium #chrome firefox msedge webkit
 
 # compile ems_screenshot.py to ems_screenshot.pyc
 python -m compileall -f ems_screenshot.py
+
+# Restore Restricted setting for ExecutionPolicy
+Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser

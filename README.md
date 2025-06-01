@@ -85,12 +85,20 @@
 ## 3. Benutzung und Kommandozeilen-Argumente
 - Der Screenshotter kann über die Kommandozeile (Bash bzw. PowerShell) gestartet werden.
 - Wird er ohne Argumente gestartet, werden die in der `config.ini` definierten Einstellungen verwendet.
+  macOS und Ubuntu:
+  ```bash
+  python3 ems_screenshotter.py
+  ```
+  Windows:
+  ```powershell
+  python .\ems_screenshotter.py
+  ```
 - Über --help oder -h kann eine Übersicht der verfügbaren Kommandozeilen-Argumente angezeigt werden.
 - unter Windows:
   ```powershell
-  python ems_screenshotter.py --help
+  python .\ems_screenshotter.py --help
   ```
-- unter MacOS und Ubuntu:
+- unter macOS und Ubuntu:
   ```bash
   python3 ems_screenshotter.py --help
   ```

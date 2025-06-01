@@ -15,6 +15,9 @@ pip install -r requirements.txt
 # install chromium (+chrome, firefox, edge and webkit) browsers with all needed dependencies
 python -m playwright install --with-deps chromium #chrome firefox msedge webkit
 
+# install winldd for playwright
+python -m playwright install winldd
+
 # compile ems_screenshot.py to ems_screenshot.pyc
 python -m compileall -f ems_screenshot.py
 

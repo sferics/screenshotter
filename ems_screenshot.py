@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 __author__  = "Juri Hubrig"
 
 
@@ -352,8 +352,6 @@ def add_watermark(image_path, position, dt_utc):
 
 
 # datetime functions for easier handling
-#utcnow_minutes       = lambda : dt.utcnow().replace(second=0, microsecond=0)
-#utcnow_seconds       = lambda : dt.utcnow().replace(microsecond=0)
 utcnow_minutes       = lambda : dt.now(tz.utc).replace(second=0, microsecond=0)
 utcnow_seconds       = lambda : dt.now(tz.utc).replace(microsecond=0)
 
@@ -361,6 +359,7 @@ utcnow_minutes_str   = lambda : utcnow_minutes().strftime("%Y-%m-%d %H:%M")
 utcnow_seconds_str   = lambda : utcnow_seconds().strftime("%Y-%m-%d %H:%M:%S")
 utcnow_metmaps_str   = lambda : utcnow_seconds().strftime("%Y%m%d%H%M")
 
+dt_seconds        = lambda dt_utc : dt_utc.replace(microseconds=0)
 dt_minutes        = lambda dt_utc : dt_utc.replace(second=0, microsecond=0)
 dt_minutes_file   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d_%H%M")
 dt_minutes_mark   = lambda dt_utc : dt_utc.strftime("%Y-%m-%d %H:%M")
@@ -497,7 +496,6 @@ if __name__ == '__main__':
          # get the function for the desired site
          site_function = globals()[site]
          # get the current datetime in UTC timezone
-         #dt_utc = dt.utcnow()
          dt_utc = dt.now(tz.utc)
          # create a new process for each site with the given arguments
          p = Process(
@@ -562,18 +560,18 @@ if __name__ == '__main__':
    # if 2 command line arguments are present, take them as start and end datetimes
    if len(args.start_end) == 2: 
       start_datetime, end_datetime = args.start_end
-   # if only 1 or no command line arguments are present, take the start and end datetimes from the config
+   # if only 1 or no command line arguments are present, take the end datetime from the config
    elif len(args.start_end) == 1:
       # if only 1 command line argument is given, take it as start_datetime
       # and set end_datetime to the default end_datetime from the config
       start_datetime, end_datetime = args.start_end[0], cfg.end_datetime
    else: sys.exit("Please enter 1, 2 or NO command line argument(s)")
    
+   start_datetime_hhmm = False
    
    # check if start_datetime is 'now' or a valid datetime
    if start_datetime == "now":
       # get difference from now to the next full minute, so we know how much time we have to run the script
-      #dt_now         = dt.utcnow()
       dt_now         = dt.now(tz.utc)
       dt_next_minute = utcnow_minutes() + td(minutes=1)
       buffer_time    = 0
@@ -588,24 +586,22 @@ if __name__ == '__main__':
       
       # add the extra minute + buffer time to the current time
       start_datetime = utcnow_minutes() + td(minutes = 1+buffer_time )
-   
    elif len(start_datetime) == 4:
+      start_datetime_hhmm = True
       # if only HHMM is given, take the current date and time
-      #dt_now         = dt.utcnow()
       dt_now         = dt.now(tz.utc)
       HHMM           = start_datetime
-      start_datetime = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]))
+      start_datetime = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
    elif len(start_datetime) == 12:
       # if YYYYmmddHHMM is given, take the given date and time
       YYYY           = start_datetime[0:4]
       mmdd           = start_datetime[4:8]
       HHMM           = start_datetime[8:]
-      start_datetime = dt(int(YYYY), int(mmdd[0:2]), int(mmdd[2:]), int(HHMM[0:2]), int(HHMM[2:]))
+      start_datetime = dt(int(YYYY), int(mmdd[0:2]), int(mmdd[2:]), int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
    # if the input is not valid, exit the script
    else: sys.exit("WRONG INPUT: start_datetime has to be 4 or 12 characters long!")
    
    # if the start_datetime is in the past, exit the script
-   #if start_datetime < dt.utcnow():
    if start_datetime < dt.now(tz.utc):
       sys.exit("WRONG INPUT: start_datetime needs to be NOW or in the future!")
    
@@ -614,20 +610,22 @@ if __name__ == '__main__':
    if end_datetime == "max":
       # if end_datetime is 'max', set it to the maximum possible datetime
       from datetime import MAXYEAR
-      end_datetime = dt(MAXYEAR, 12, 31, 23, 59)
+      end_datetime = dt(MAXYEAR, 12, 31, 23, 59, tzinfo=tz.utc)
    # if end_datetime is 'now', take a screenshot immediately and exit the script
    elif len(end_datetime) == 4:
       # if only HHMM is given, take the current date and time
-      #dt_now         = dt.utcnow()
       dt_now         = dt.now(tz.utc)
       HHMM           = end_datetime
-      end_datetime   = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]))
+      end_datetime   = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
+      # if start_datetime has HHMM format as well and is larger equal end_datetime: add 1 day to end_datetime
+      if start_datetime_hhmm == True and start_datetime >= end_datetime:
+         end_datetime += td(days=1)
    elif len(end_datetime) == 12:
       # if YYYYmmddHHMM is given, take the given date and time
       YYYY           = end_datetime[0:4]
       mmdd           = end_datetime[4:8]
       HHMM           = end_datetime[8:]
-      end_datetime   = dt(int(YYYY), int(mmdd[0:2]), int(mmdd[2:]), int(HHMM[0:2]), int(HHMM[2:]))
+      end_datetime   = dt(int(YYYY), int(mmdd[0:2]), int(mmdd[2:]), int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
    elif end_datetime == "now":
       # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
@@ -640,22 +638,21 @@ if __name__ == '__main__':
    else: sys.exit("WRONG INPUT: end_datetime has to be 4 or 12 characters long!")
    
    # if the end_datetime is in the past, exit the script
-   #if end_datetime <= dt.utcnow():
    if end_datetime <= dt.now(tz.utc):
       sys.exit("WRONG INPUT: end_datetime needs to be in the future!")
    
 
    # wait for start time to begin
-   #while dt.utcnow() < start_datetime:
    while dt.now(tz.utc) < start_datetime:
       # if verbose is True, print the remaining time
       if verbose:
          # get the remaining time until the start_datetime
-         #remaining_time = start_datetime - dt.utcnow()
          remaining_time = start_datetime - dt.now(tz.utc)
+         # remove the microseconds from timedelta remaining_time
+         remaining_time -= td(microseconds=remaining_time.microseconds)
          # clear the all previous output and print the remaining time
          clear_output()
-         print(f"Waiting for next full minute to start (remaining time: {remaining_time})...")
+         print(f"Waiting for the desired start_datetime minute to begin (remaining time: {remaining_time})...")
       # sleep for a very short time to not overload the CPU
       sleep(0.0000001)
    
@@ -663,14 +660,12 @@ if __name__ == '__main__':
    if verbose: print("Starting to take screenshot(s) NOW...")
    
    # start taking screenshots
-   #while dt.utcnow() <= end_datetime:
    while dt.now(tz.utc) <= end_datetime:
       
       # if verbose is True, print the current datetime
       if verbose:
          # clear the all previous output and print the current datetime
          #clear_output()
-         #print(f"Taking screenshot(s) at {utcnow_seconds_str()}...")
          print(f"Taking screenshot(s) at {utcnow_seconds_str()}...")
       # take screenshots of all desired sites
       get_screenshots(join=args.join)

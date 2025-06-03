@@ -382,7 +382,7 @@ if __name__ == '__main__':
    # facilitate access to config sections
    cf_general        = config["general"]
    cf_debug          = config["debug"]
-   cf_playwright     = config["browser"]
+   cf_playwright     = config["playwright"]
    cf_metmaps        = config["metmaps"]
     
    # get general config elements

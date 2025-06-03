@@ -16,11 +16,15 @@
 - Unter Windows muss das Script `windows_install.ps1` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
 - Falls die Ausführung durch eine Systemrichtlinie blockiert wird, kann die Ausführung der PowerShell-Skripte temporär mit folgendem Befehl erlaubt werden:
   ```powershell
-  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
   ```
 - Danach die PowerShell neu starten und das Skript erneut ausführen.
   ```powershell
   .\windows_install.ps1
+  ```
+- Anschließend die `ExecutionPolicy` wieder auf `Restricted` setzen.
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
   ```
 - Die Installation installiert die Abhängigkeiten und legt die Umgebungsvariablen an, die für die Ausführung des Screenshotters notwendig sind.
 - Zuerst wird Python 3.13 installiert und der Nutzer muss den Anweisungen folgen, um die Installation abzuschließen.
@@ -69,8 +73,8 @@
 - Die Datei ist in verschiedene Abschnitte unterteilt, die jeweils eine bestimmte Funktion haben.
 - Die Abschnitte sind:
   - `[general]`: Allgemeine Einstellungen, wie das Intervall zwischen den Screenshots.
-  - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
   - `[debug]`: Einstellungen für den Debug-Modus, wie z.B. die Aktivierung des Loggings (log) und Debug-Ausgaben (verbose).
+  - `[playwright]`: Alles, was das `playwright`-Package betrifft, wie z.B. der Browser, der User-Agent und das Timeout.
   - `[metmaps]`: Einstellungen für die Metamaps, wie z.B. die URL der Metamap-API.
 - Die Konfiguration kann manuell angepasst werden, um die gewünschten Einstellungen vorzunehmen.
 - Es ist wichtig, die Konfiguration vor der ersten Ausführung des Screenshotters anzupassen, um sicherzustellen, dass alle Einstellungen korrekt sind.
@@ -81,17 +85,25 @@
 ## 3. Benutzung und Kommandozeilen-Argumente
 - Der Screenshotter kann über die Kommandozeile (Bash bzw. PowerShell) gestartet werden.
 - Wird er ohne Argumente gestartet, werden die in der `config.ini` definierten Einstellungen verwendet.
-- Über --help oder -h kann eine Übersicht der verfügbaren Kommandozeilen-Argumente angezeigt werden.
-- unter Windows:
+- Windows:
   ```powershell
-  python ems_screenshotter.py --help
+  python .\ems_screenshotter.py
   ```
-- unter MacOS und Ubuntu:
+- macOS und Ubuntu:
+  ```bash
+  python3 ems_screenshotter.py
+  ```
+- Über --help oder -h kann eine Übersicht der verfügbaren Kommandozeilen-Argumente angezeigt werden.
+- Windows:
+  ```powershell
+  python .\ems_screenshotter.py --help
+  ```
+- macOS und Ubuntu:
   ```bash
   python3 ems_screenshotter.py --help
   ```
 - Die wichtigsten Kommandozeilen-Argumente sind:<br><br>
-`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`). Steht dort `end_datetime = max` läuft der Screenshotter (theoretisch) unendlich weiter!<br>
+`start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`). Steht dort `end_datetime = max` läuft der Screenshotter (theoretisch) unendlich weiter! `start_datetime = now` dagegen sorgt dafür, dass ein Screenshot JETZT aufgenommen wird.<br>
 `--sites/-s`: Eine Liste von Websites, die gescreenshotet werden sollen. Diese Liste kann durch Kommata getrennt werden. Wenn keine Websites angegeben sind, werden alle in der Konfiguration definierten Websites gescreenshotet.<br>
 `--output_dir/-o`: Der Pfad zum Verzeichnis, in dem die Screenshots gespeichert werden sollen. Wenn kein Pfad angegeben ist, wird das aktuelle Verzeichnis verwendet.<br>
 `--verbose/-v`: Aktiviert den ausführlichen Modus, der zusätzliche Informationen während der Ausführung des Screenshotters ausgibt.<br>

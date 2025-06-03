@@ -95,7 +95,7 @@
 - Wird er ohne Argumente gestartet, werden die in der `config.ini` definierten Einstellungen verwendet.
 - Windows:
   ```powershell
-  python .\ems_screenshotter.py
+  .\screenshotter.exe
   ```
 - macOS und Ubuntu:
   ```bash
@@ -104,7 +104,7 @@
 - Über --help oder -h kann eine Übersicht der verfügbaren Kommandozeilen-Argumente angezeigt werden.
 - Windows:
   ```powershell
-  python .\screenshotter.exe --help
+  .\screenshotter.exe --help
   ```
 - macOS und Ubuntu:
   ```bash

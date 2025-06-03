@@ -14,11 +14,16 @@
 
 ### Windows
 - Unter Windows muss das Script `windows_install.ps1` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.
+- Dazu muss die PowerShell als Administrator geöffnet werden (Rechtsklick -> "als Administrator ausführen" und in das Verzeichnis gewechselt werden, in dem sich das Skript befindet.
+  ```powershell
+  cd C:\path\to\screenshotter
+  .\windows_install.ps1
+  ```
 - Falls die Ausführung durch eine Systemrichtlinie blockiert wird, kann die Ausführung der PowerShell-Skripte temporär mit folgendem Befehl erlaubt werden:
   ```powershell
   Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
   ```
-- Danach die PowerShell neu starten und das Skript erneut ausführen.
+- Danach das Skript erneut ausführen.
   ```powershell
   .\windows_install.ps1
   ```
@@ -29,10 +34,13 @@
 - Die Installation installiert die Abhängigkeiten und legt die Umgebungsvariablen an, die für die Ausführung des Screenshotters notwendig sind.
 - Zuerst wird Python 3.13 installiert und der Nutzer muss den Anweisungen folgen, um die Installation abzuschließen.
 - Danach wird die Python-Executable in den Umgebungsvariablen eingetragen.
+- Dann wird die virtuelle Umgebung `venv` erstellt, in der der Screenshotter ausgeführt wird. Diese virtuelle Umgebung isoliert die Abhängigkeiten des Screenshotters von anderen Python-Projekten auf dem System.
+- Die virtuelle Umgebung wird im nächsten Schritt aktiviert für die Installation der Abhängigkeiten.
 - Anschließend werden die benötigen Python-Pakete installiert, die in der `requirements.txt` definiert sind.
 - Dann wird noch der Chromium-Headless-Browser installiert, der für die Screenshots benötigt wird. 
 - Die Installation des Browsers kann einige Zeit in Anspruch nehmen, da er heruntergeladen und entpackt werden muss.
-- Als letzter Schritt wird das Skript `ems_screenshotter.py` als eine .pyc-Datei kompiliert, um die Ausführung zu beschleunigen.
+- Daraufhin wird das Skript `ems_screenshot.py` als eine .pyc-Datei kompiliert, um die Ausführung zu beschleunigen.
+- Die Installation des Screenshotters wird abgeschlossen, indem eine ausführbare Datei `screenshotter.exe` erstellt wird, die den Screenshotter direkt ausführen kann und vorher die virtuelle Umgebung zu aktiviert. Dadurch wird sichergestellt, dass der Screenshotter immer die richtige Python-Version und die richtigen Abhängigkeiten verwendet.
 - Die Installation ist damit abgeschlossen und der Screenshotter kann verwendet werden.
 
 
@@ -96,11 +104,11 @@
 - Über --help oder -h kann eine Übersicht der verfügbaren Kommandozeilen-Argumente angezeigt werden.
 - Windows:
   ```powershell
-  python .\ems_screenshotter.py --help
+  python .\screenshotter.exe --help
   ```
 - macOS und Ubuntu:
   ```bash
-  python3 ems_screenshotter.py --help
+  python3 ems_screenshot.py --help
   ```
 - Die wichtigsten Kommandozeilen-Argumente sind:<br><br>
 `start_end`: Start- und Enddatum für die Screenshots im Format `YYYYMMDDhhmm`. Wird nur ein Datum angegeben, wird der Screenshotter zu diesem Zeitpunkt gestartet und läuft so lange weiter, wie in der Konfiguration angegeben (`end_datetime`). Steht dort `end_datetime = max` läuft der Screenshotter (theoretisch) unendlich weiter! `start_datetime = now` dagegen sorgt dafür, dass ein Screenshot JETZT aufgenommen wird.<br>
@@ -131,9 +139,9 @@
   ```
 - Ein Beispiel für einen Cronjob, der den Screenshotter alle 5 Minuten ausführt, könnte wie folgt aussehen:
   ```bash
-  */5 * * * * /usr/bin/python3 /path/to/ems_screenshotter.py
+  */5 * * * * /usr/bin/python3 /path/to/ems_screenshot.py
   ```
-- Dieser Cronjob führt das Skript `ems_screenshotter.py` alle 5 Minuten aus.
+- Dieser Cronjob führt das Skript `ems_screenshot.py` alle 5 Minuten aus.
 - Es ist wichtig, den vollständigen Pfad zum Skript anzugeben, damit der Cronjob es finden kann.
 - Es ist auch möglich, den Cronjob so zu konfigurieren, dass er nur an bestimmten Tagen oder zu bestimmten Zeiten ausgeführt wird.
 - Um den Cronjob zu testen, kann er manuell ausgeführt werden, um sicherzustellen, dass er korrekt funktioniert.
@@ -147,9 +155,9 @@
 - Unter Windows kann die Aufgabenplanung verwendet werden, um einen zeitgesteuerten Task zu erstellen.
 - Alternativ lässt sich folgende Syntax verwenden, um den Screenshotter zu automatisieren. Hier ein Beispiel für einen Task, der alle 5 Minuten ausgeführt wird:
   ```powershell
-  New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "python" -Argument "C:\path\to\ems_screenshotter.py") -Trigger (New-ScheduledTaskTrigger -AtStartup -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration ([TimeSpan]::MaxValue)) -RunLevel Highest | Register-ScheduledTask -TaskName "EMS_Screenshotter"
+  New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "python" -Argument "C:\path\to\screenshotter.exe") -Trigger (New-ScheduledTaskTrigger -AtStartup -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration ([TimeSpan]::MaxValue)) -RunLevel Highest | Register-ScheduledTask -TaskName "EMS_Screenshotter"
   ```
-- Dieser Befehl erstellt einen neuen geplanten Task, der das Skript `ems_screenshotter.py` alle 5 Minuten ausführt.
+- Dieser Befehl erstellt einen neuen geplanten Task, der das Skript `screenshotter.exe` alle 5 Minuten ausführt.
 
 
 ## 5. Fehlerbehebung

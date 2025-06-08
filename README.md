@@ -23,6 +23,7 @@
   ```powershell
   Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
   ```
+- Der Befehl muss u.U. nach kurzer Wartezeit mit "A" für "Ja, alle" bestätigt werden.
 - Danach das Skript erneut ausführen.
   ```powershell
   .\windows_install.ps1

@@ -28,10 +28,7 @@
   ```powershell
   .\windows_install.ps1
   ```
-- Anschließend die `ExecutionPolicy` wieder auf `Restricted` setzen.
-  ```powershell
-  Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
-  ```
+- Bestätigen mit "M" (einmal ausführen). Es kann sein, dass während der Installtion weitere Bestätigungen mit "J" (Ja) oder "A"/"M" abgefragt werden. Diese Buchstaben jeweils eingeben und Enter drücken.
 - Die Installation installiert die Abhängigkeiten und legt die Umgebungsvariablen an, die für die Ausführung des Screenshotters notwendig sind.
 - Zuerst wird Python 3.13 installiert und der Nutzer muss den Anweisungen folgen, um die Installation abzuschließen.
 - Danach wird die Python-Executable in den Umgebungsvariablen eingetragen.
@@ -42,8 +39,11 @@
 - Die Installation des Browsers kann einige Zeit in Anspruch nehmen, da er heruntergeladen und entpackt werden muss.
 - Daraufhin wird das Skript `ems_screenshot.py` als eine .pyc-Datei kompiliert, um die Ausführung zu beschleunigen.
 - Die Installation des Screenshotters wird abgeschlossen, indem eine ausführbare Datei `screenshotter.exe` erstellt wird, die den Screenshotter direkt ausführen kann und vorher die virtuelle Umgebung zu aktiviert. Dadurch wird sichergestellt, dass der Screenshotter immer die richtige Python-Version und die richtigen Abhängigkeiten verwendet.
+- Anschließend die `ExecutionPolicy` wieder auf `Restricted` setzen.
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
+  ```
 - Die Installation ist damit abgeschlossen und der Screenshotter kann verwendet werden.
-
 
 ### macOS
 - Unter MacOS muss das Script `macos_install.sh` ausgeführt werden, um die notwendigen Abhängigkeiten zu installieren.

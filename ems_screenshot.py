@@ -1,5 +1,5 @@
 # Description: Takes screenshot(s) of the DWD or UWZ warning maps or metmaps.eu
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 __author__  = "Juri Hubrig"
 
 
@@ -369,8 +369,23 @@ def clear_output():
    """
    Clears the output in the terminal.
    """
-   import os
-   os.system('cls' if os.name == 'nt' else "printf '\033c'")
+   # this does not work anymore in recent windows versions
+   #import os
+   #os.system('cls' if os.name == 'nt' else "printf '\033c'")
+   
+   # updated code base on this post https://stackoverflow.com/a/23075152
+   
+   import subprocess, platform
+   
+   if platform.system() == "Windows":
+      if platform.release() in {"10", "11"}:
+         # Need to fix a bug regarding Windows 10 and 11
+         subprocess.run("", shell=True)
+         print("\033c", end="")
+      else:
+         subprocess.run(["cls"])
+   else: # on Linux and Mac
+      print("\033c", end="")
 
 
 if __name__ == '__main__':
@@ -611,23 +626,26 @@ if __name__ == '__main__':
       # if end_datetime is 'max', set it to the maximum possible datetime
       from datetime import MAXYEAR
       end_datetime = dt(MAXYEAR, 12, 31, 23, 59, tzinfo=tz.utc)
-   # if end_datetime is 'now', take a screenshot immediately and exit the script
+   # if only HHMM is given, take the current date and time
    elif len(end_datetime) == 4:
-      # if only HHMM is given, take the current date and time
       dt_now         = dt.now(tz.utc)
       HHMM           = end_datetime
       end_datetime   = dt(dt_now.year, dt_now.month, dt_now.day, int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
       # if start_datetime has HHMM format as well and is larger equal end_datetime: add 1 day to end_datetime
       if start_datetime_hhmm == True and start_datetime >= end_datetime:
          end_datetime += td(days=1)
+      # add intervall to end datetime so we stop exactly at end_datetime (included)
+      end_datetime += td(minutes=args.interval)
+   # if YYYYmmddHHMM is given, take the given date and time
    elif len(end_datetime) == 12:
-      # if YYYYmmddHHMM is given, take the given date and time
       YYYY           = end_datetime[0:4]
       mmdd           = end_datetime[4:8]
       HHMM           = end_datetime[8:]
       end_datetime   = dt(int(YYYY), int(mmdd[0:2]), int(mmdd[2:]), int(HHMM[0:2]), int(HHMM[2:]), tzinfo=tz.utc)
+      # add intervall to end datetime so we stop exactly at end_datetime (included)
+      end_datetime += td(minutes=args.interval)
+   # if end_datetime is 'now', take a screenshot immediately and exit the script
    elif end_datetime == "now":
-      # if end_datetime is 'now', take a screenshot immediately and exit the script
       if verbose: print("Taking screenshot(s) NOW...")
       errors = get_screenshots(join=args.join)
       if errors:

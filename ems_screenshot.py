@@ -86,8 +86,7 @@ def u(args, dt_utc, logger):
          if args.network_idle:
             page.wait_for_load_state('networkidle')
          # else just wait for the correct load state
-         else:
-            page.wait_for_load_state('load')
+         else: page.wait_for_load_state('load')
       # if an error occurs, handle it
       except Exception as e:
          if args.verbose:
